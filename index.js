@@ -163,7 +163,7 @@ exports.get_locales = function (loc) {
 }
 
 exports.lookup = function (next, connection) {
-  if (plugin_name === 'geoip') return this.lookup_maxmind(next, connection)
+  if (plugin_name === 'geoip' || plugin_name === 'geolite2-redist') return this.lookup_maxmind(next, connection)
   return this.lookup_geoip_lite(next, connection)
 }
 
@@ -261,7 +261,7 @@ exports.get_geoip = function (ip) {
     if (res.city)          show.push(res.city);
   }
 
-  if (plugin_name === 'geoip') {     // maxmind
+  if (plugin_name === 'geoip' || plugin_name === 'geolite2-redist') {     // maxmind
     if (res.continent && res.continent.code) show.push(res.continent.code);
     if (res.country   && res.country.iso_code) show.push(res.country.iso_code);
     if (res.subdivisions && res.subdivisions[0]) show.push(res.subdivisions[0].iso_code);
