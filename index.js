@@ -73,7 +73,7 @@ exports.register_geolite2redis = function () {
 
   if (this.geoip) {
     this.loginfo('provider geolite2-redist');
-    this.register_hook('connect',   'lookup_geoip_lite');
+    this.register_hook('connect',   'lookup_maxmind');
     this.register_hook('data_post', 'add_headers');
   }
 }
