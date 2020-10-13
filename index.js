@@ -4,7 +4,7 @@ const path      = require('path');
 
 const net_utils = require('haraka-net-utils');
 
-const plugin_name = 'geoip'
+const plugin_name = 'geolite2-redist'
 
 function ucFirst (string) {
   return string.charAt(0).toUpperCase() + string.slice(1);
@@ -14,6 +14,7 @@ exports.register = async function () {
   this.load_geoip_ini();
 
   if (plugin_name === 'geoip-lite') return this.register_geolite()
+  if (plugin_name === 'geolite2-redist') return this.register_geolite2redis()
 
   try {
     this.maxmind = require('maxmind');
@@ -49,6 +50,29 @@ exports.register_geolite = function () {
 
   if (this.geoip) {
     this.loginfo('provider geoip-lite');
+    this.register_hook('connect',   'lookup_geoip_lite');
+    this.register_hook('data_post', 'add_headers');
+  }
+}
+
+exports.register_geolite2redis = function () {
+
+  try {
+    this.geoip = require('geolite2-redist');
+  }
+  catch (e) {
+    this.logerror(`unable to load geolite2-redist, try\n\n\t'npm install -g geolite2-redist'\n\n`);
+    return
+  }
+
+  if (!this.geoip) {
+    // geoip-lite dropped node 0.8 support, it may not have loaded
+    this.logerror('unable to load geolite2-redist')
+    return
+  }
+
+  if (this.geoip) {
+    this.loginfo('provider geolite2-redist');
     this.register_hook('connect',   'lookup_geoip_lite');
     this.register_hook('data_post', 'add_headers');
   }
@@ -223,7 +247,7 @@ exports.get_geoip = function (ip) {
   }
 
   let res;
-  if (plugin_name === 'geoip')      res = plugin.get_geoip_maxmind(ip);
+  if (plugin_name === 'geoip' || plugin_name === 'geolite2-redist') res = plugin.get_geoip_maxmind(ip);
   if (plugin_name === 'geoip-lite') res = plugin.get_geoip_lite(ip);
   if (!res) return;
 
