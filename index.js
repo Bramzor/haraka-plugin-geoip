@@ -16,6 +16,7 @@ exports.register = async function () {
   if (plugin_name === 'geoip-lite') return this.register_geolite()
   if (plugin_name === 'geolite2-redist') return this.register_geolite2redis()
 
+  this.loginfo('Loading Maxmind');
   try {
     this.maxmind = require('maxmind');
   }
@@ -24,11 +25,14 @@ exports.register = async function () {
     this.logerror(`unable to load maxmind, try\n\n\t'npm install -g maxmind'\n\n`);
   }
 
+  this.loginfo('load_dbs 1');
   await this.load_dbs();
   this.loginfo('load_dbs DONE');
   this.logdebug('load_dbs DONE');
 
+  this.loginfo('Registering hooks');
   if (this.dbsLoaded) {
+    this.loginfo('hooks done');
     this.register_hook('connect',   'lookup_maxmind');
     this.register_hook('data_post', 'add_headers');
   }
