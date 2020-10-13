@@ -25,7 +25,8 @@ exports.register = async function () {
   }
 
   await this.load_dbs();
-  this.logdebug('load_dbs DONE')
+  this.loginfo('load_dbs DONE');
+  this.logdebug('load_dbs DONE');
 
   if (this.dbsLoaded) {
     this.register_hook('connect',   'lookup_maxmind');
