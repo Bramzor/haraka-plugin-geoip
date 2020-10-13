@@ -14,7 +14,7 @@ exports.register = async function () {
   this.load_geoip_ini();
 
   if (plugin_name === 'geoip-lite') return this.register_geolite()
-  if (plugin_name === 'geolite2-redist') return this.register_geolite2redis()
+  if (plugin_name === 'geolite2-redist') this.register_geolite2redis()
 
   this.loginfo('Loading Maxmind');
   try {
@@ -75,12 +75,6 @@ exports.register_geolite2redis = function () {
     // geoip-lite dropped node 0.8 support, it may not have loaded
     this.logerror('unable to load geolite2-redist')
     return
-  }
-
-  if (this.geoip) {
-    this.loginfo('provider geolite2-redist');
-    this.register_hook('connect',   'lookup_maxmind');
-    this.register_hook('data_post', 'add_headers');
   }
 }
 
