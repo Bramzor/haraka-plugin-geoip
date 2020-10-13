@@ -16,6 +16,7 @@ This Haraka plugin supports two geoip modules:
 | Plugin | geoip module |
 | ------ | ----- |
 | [haraka-plugin-geoip][5] | [maxmind](https://github.com/runk/node-maxmind) |
+| [haraka-plugin-geoip][5] | [maxmind](https://github.com/runk/node-maxmind) using [geolite2-redist](https://github.com/GitSquared/node-geolite2-redist) |
 | [haraka-plugin-geoip-lite][2] | [geoip-lite](https://github.com/bluesmoon/node-geoip) |
 
 # INSTALL (lite)
@@ -34,6 +35,14 @@ The maxmind module requires the manual download of the GeoIP databases. The npm 
 mkdir -p /usr/local/share/GeoIP
 npm install -g maxmind-geolite-mirror
 /usr/local/bin/maxmind-geolite-mirror
+```
+
+# INSTALL (maxmind npm redistribution - geolite2-redist)
+
+geolite2-redist is an NPM redistribution of GeoLite2 databases which does not require a personal LICENSE. Check the module README to make sure you are allowed to use the redistribution.
+
+```bash
+npm install geolite2-redist
 ```
 
 # DESCRIPTION

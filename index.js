@@ -16,7 +16,6 @@ exports.register = async function () {
   if (plugin_name === 'geoip-lite') return this.register_geolite()
   if (plugin_name === 'geolite2-redist') this.register_geolite2redis()
 
-  this.loginfo('Loading Maxmind');
   try {
     this.maxmind = require('maxmind');
   }
@@ -25,14 +24,9 @@ exports.register = async function () {
     this.logerror(`unable to load maxmind, try\n\n\t'npm install -g maxmind'\n\n`);
   }
 
-  this.loginfo('load_dbs 1');
   await this.load_dbs();
-  this.loginfo('load_dbs DONE');
-  this.logdebug('load_dbs DONE');
 
-  this.loginfo('Registering hooks');
   if (this.dbsLoaded) {
-    this.loginfo('hooks done');
     this.register_hook('connect',   'lookup_maxmind');
     this.register_hook('data_post', 'add_headers');
   }
@@ -62,7 +56,7 @@ exports.register_geolite = function () {
 }
 
 exports.register_geolite2redis = function () {
-
+  const plugin = this;
   try {
     this.geoip = require('geolite2-redist');
   }
@@ -75,6 +69,16 @@ exports.register_geolite2redis = function () {
     // geoip-lite dropped node 0.8 support, it may not have loaded
     this.logerror('unable to load geolite2-redist')
     return
+  }
+
+  if (this.geoip) {
+    this.loginfo('provider geolite2-redist');
+
+    this.geoip_dbWatcher = new this.geoip.UpdateSubscriber();
+    this.geoip_dbWatcher.on('update', async function () {
+      this.loginfo('geolite2-redist new databases detected, loading database files again');
+      await plugin.load_dbs();
+    });
   }
 }
 
@@ -460,4 +464,9 @@ exports.originating_headers = function (connection) {
 
   connection.loginfo(plugin, `originating=${found_ip} ${gi.human}`);
   return `${found_ip}:${get_country(gi)}`;
+}
+
+exports.shutdown = function () {
+  const plugin = this;
+  if (plugin.geoip_dbWatcher) geoip_dbWatcher.close();
 }
