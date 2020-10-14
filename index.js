@@ -12,6 +12,7 @@ function ucFirst (string) {
 
 exports.register = async function () {
   this.load_geoip_ini();
+  this.plugin_addheaders = plugin.cfg.main.add_headers || true;
 
   if (plugin_name === 'geoip-lite') return this.register_geolite()
   if (plugin_name === 'geolite2-redist') this.register_geolite2redis()
@@ -28,7 +29,7 @@ exports.register = async function () {
 
   if (this.dbsLoaded) {
     this.register_hook('connect',   'lookup_maxmind');
-    this.register_hook('data_post', 'add_headers');
+    if (this.plugin_addheaders) this.register_hook('data_post', 'add_headers');
   }
 }
 
@@ -51,7 +52,7 @@ exports.register_geolite = function () {
   if (this.geoip) {
     this.loginfo('provider geoip-lite');
     this.register_hook('connect',   'lookup_geoip_lite');
-    this.register_hook('data_post', 'add_headers');
+    if (this.plugin_addheaders) this.register_hook('data_post', 'add_headers');
   }
 }
 
