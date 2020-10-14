@@ -12,7 +12,7 @@ function ucFirst (string) {
 
 exports.register = async function () {
   this.load_geoip_ini();
-  this.plugin_addheaders = plugin.cfg.main.add_headers || true;
+  this.plugin_addheaders = this.cfg.main.add_headers || true;
 
   if (plugin_name === 'geoip-lite') return this.register_geolite()
   if (plugin_name === 'geolite2-redist') this.register_geolite2redis()
