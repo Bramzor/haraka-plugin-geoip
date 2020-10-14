@@ -109,8 +109,9 @@ exports.load_dbs = async function () {
 
   plugin.dbsLoaded = 0;
   const dbdir = plugin.cfg.main.dbdir || '/usr/local/share/GeoIP/';
+  const dbfiles = plugin.cfg.main.dbfiles || ['city', 'country', 'ASN'];
 
-  for (const db of ['city', 'country', 'ASN']) {
+  for (const db of dbfiles) {
     const dbPath = path.join(dbdir, `GeoLite2-${ucFirst(db)}.mmdb`);
     if (!fs.existsSync(dbPath)) {
       plugin.logdebug(`missing DB ${dbPath}`)
